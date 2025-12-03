@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARC Raiders Field Library</title>
+    <style>
+        :root { --bg: #f0f2f5; --text: #1a1a1a; --card: white; --border: #ddd; --th-bg: #f2f2f2; }
+        [data-theme="dark"] { --bg: #0d1117; --text: #e6edf3; --card: #161b22; --border: #30363d; --th-bg: #21262d; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background: var(--bg); color: var(--text); transition: all 0.3s; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .header button { padding: 10px 16px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        .theme-toggle { background: #444; }
+        #exportBtn { background: #5865f2; }
+        #exportBtn:hover { background: #4752c4; }
+        .section { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid var(--border); }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 600px; margin: 0 auto; }
+        form.full { grid-template-columns: 1fr; }
+        label span { display: inline-block; width: 110px; }
+        input, textarea, select, button { padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+        textarea { resize: vertical; min-height: 80px; }
+        button:not(.delete):not(.edit):not(#exportBtn):not(.theme-toggle) { background: #238636; color: white; font-weight: bold; }
+        button:hover:not(.delete):not(.edit) { background: #2ea043; }
+        button.delete { background: #da3633; padding: 6px 12px; font-size: 0.9em; }
+        button.delete:hover { background: #ef4444; }
+        button.edit { background: #0366d6; padding: 6px 12px; font-size: 0.9em; margin-right: 6px; }
+        button.edit:hover { background: #005cc5; }
+        #controls { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 20px 0; align-items: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid var(--border); padding: 12px; text-align: left; vertical-align: top; }
+        th { background: var(--th-bg); cursor: pointer; user-select: none; }
+        th:hover { background: rgba(255,255,255,0.1); }
+        tr:nth-child(even) { background: rgba(0,0,0,0.03); }
+        [data-theme="dark"] tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+        .actions { white-space: nowrap; text-align: center; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); padding: 24px; border-radius: 12px; width: 90%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-header h3 { margin: 0; }
+        .close { font-size: 28px; cursor: pointer; }
+        .modal form { grid-template-columns: 1fr; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ARC Raiders Field Library</h1>
+            <div>
+                <button class="theme-toggle" id="themeToggle">Dark Mode</button>
+                <button id="exportBtn">Export data.json</button>
+            </div>
+        </div>
+
+        <div id="loading">Loading data...</div>
+
+        <div id="app" style="display:none;">
+            <!-- Add Forms -->
+            <div class="section">
+                <h2>Add Enemy</h2>
+                <form id="addEnemyForm" class="full">
+                    <label><span>Name:</span> <input type="text" id="enemyName" required></label>
+                    <label><span>Loot (comma-separated):</span> <input type="text" id="enemyLoot"></label>
+                    <label><span>Target Strategy:</span> <input type="text" id="targetStrategy" required></label>
+                    <button type="submit">Add Enemy</button>
+                </form>
+            </div>
+
+            <div class="section">
+                <h2>Add Loot</h2>
+                <form id="addLootForm">
+                    <label><span>Name:</span> <input type="text" id="lootName" required></label>
+                    <label><span>Location:</span> <input type="text" id="lootLocation" required></label>
+                    <label><span>Notes:</span> <textarea id="lootNotes" placeholder="e.g. Sell all, Stash for crafting, Scrap if duplicate..."></textarea></label>
+                    <button type="submit" style="grid-column: span 2;">Add Loot</button>
+                </form>
+            </div>
+
+            <!-- Inventory -->
+            <div class="section">
+                <h2>Inventory <small id="itemCount"></small></h2>
+                <div id="controls">
+                    <input type="text" id="search" placeholder="Search by name...">
+                    <select id="typeFilter">
+                        <option value="all">All Items</option>
+                        <option value="enemy">Enemies Only</option>
+                        <option value="loot">Loot Only</option>
+                    </select>
+                    <select id="sortBy">
+                        <option value="name">Name</option>
+                        <option value="type">Type</option>
+                    </select>
+                    <label><input type="checkbox" id="sortAsc" checked> Ascending</label>
+                </div>
+
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="type">Type</th>
+                            <th data-sort="name">Name</th>
+                            <th>Details</th>
+                            <th class="actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Item</h3>
+                <span class="close">×</span>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editIndex">
+                <div id="editFields"></div>
+                <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" id="cancelEdit">Cancel</button>
+                    <button type="submit" style="background:#238636;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let inventory = [];
+
+        // Theme
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.getElementById('themeToggle').textContent = 'Light Mode';
+        }
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            document.getElementById('themeToggle').textContent = isDark ? 'Dark Mode' : 'Light Mode';
+        });
+
+        // Load data
+        fetch('data.json')
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(data => { inventory = data; mergeLocalStorageItems(); startApp(); })
+            .catch(() => { inventory = JSON.parse(localStorage.getItem('arcRaidersInventory') || '[]'); startApp(); });
+
+        function mergeLocalStorageItems() {
+            const saved = JSON.parse(localStorage.getItem('arcRaidersInventory') || '[]');
+            const existing = new Set(inventory.map(i => i.name.toLowerCase()));
+            saved.forEach(item => { if (!existing.has(item.name.toLowerCase())) inventory.push(item); });
+        }
+
+        function save() { localStorage.setItem('arcRaidersInventory', JSON.stringify(inventory)); }
+
+        function startApp() {
+            document.getElementById('loading').remove();
+            document.getElementById('app').style.display = 'block';
+            render();
+            setupEvents();
+        }
+
+        function render() {
+            const search = document.getElementById('search').value.toLowerCase();
+            const filter = document.getElementById('typeFilter').value;
+            const sort = document.getElementById('sortBy').value;
+            const asc = document.getElementById('sortAsc').checked;
+
+            let list = inventory.filter(item => 
+                item.name.toLowerCase().includes(search) &&
+                (filter === 'all' || item.type === filter)
+            );
+
+            list.sort((a, b) => {
+                const A = sort === 'type' ? a.type : a.name.toLowerCase();
+                const B = sort === 'type' ? b.type : b.name.toLowerCase();
+                return (A < B ? -1 : A > B ? 1 : 0) * (asc ? 1 : -1);
+            });
+
+            const tbody = document.querySelector('#inventoryTable tbody');
+            tbody.innerHTML = '';
+            list.forEach(item => {
+                const idx = inventory.indexOf(item);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.type}</td>
+                    <td>${item.name}</td>
+                    <td>${item.type === 'enemy'
+                        ? `Loot: ${item.loot?.join(', ') || '—'}<br>Strategy: ${item.targetStrategy || '—'}`
+                        : `Location: ${item.location}<br>Notes: ${item.notes || '—'}`}</td>
+                    <td class="actions">
+                        <button class="edit" data-index="${idx}">Edit</button>
+                        <button class="delete" data-index="${idx}">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('itemCount').textContent = `(${list.length} / ${inventory.length} items)`;
+        }
+
+        function setupEvents() {
+            // Add forms
+            document.getElementById('addEnemyForm').onsubmit = e => {
+                e.preventDefault();
+                inventory.push({
+                    type: 'enemy',
+                    name: document.getElementById('enemyName').value.trim(),
+                    loot: document.getElementById('enemyLoot').value.split(',').map(s => s.trim()).filter(Boolean),
+                    targetStrategy: document.getElementById('targetStrategy').value.trim()
+                });
+                save(); render(); e.target.reset();
+            };
+
+            document.getElementById('addLootForm').onsubmit = e => {
+                e.preventDefault();
+                inventory.push({
+                    type: 'loot',
+                    name: document.getElementById('lootName').value.trim(),
+                    location: document.getElementById('lootLocation').value.trim(),
+                    notes: document.getElementById('lootNotes').value.trim()
+                });
+                save(); render(); e.target.reset();
+            };
+
+            // Controls
+            ['search', 'typeFilter', 'sortBy', 'sortAsc'].forEach(id => {
+                document.getElementById(id).addEventListener('input', render);
+                document.getElementById(id).addEventListener('change', render);
+            });
+
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.onclick = () => {
+                    const key = th.dataset.sort;
+                    if (document.getElementById('sortBy').value === key) {
+                        document.getElementById('sortAsc').checked = !document.getElementById('sortAsc').checked;
+                    } else {
+                        document.getElementById('sortBy').value = key;
+                    }
+                    render();
+                };
+            });
+
+            // Delete
+            document.querySelector('#inventoryTable tbody').addEventListener('click', e => {
+                if (e.target.classList.contains('delete')) {
+                    const idx = e.target.dataset.index;
+                    if (confirm(`Delete "${inventory[idx].name}" permanently?`)) {
+                        inventory.splice(idx, 1);
+                        save(); render();
+                    }
+                }
+                if (e.target.classList.contains('edit')) {
+                    openEditModal(+e.target.dataset.index);
+                }
+            });
+
+            // Export
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                const data = JSON.stringify(inventory, null, 4);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'data.json'; a.click();
+                URL.revokeObjectURL(url);
+                alert('data.json downloaded! Replace your old file to make changes permanent.');
+            });
+        }
+
+        // Edit Modal
+        const modal = document.getElementById('editModal');
+        const closeModal = () => modal.classList.remove('active');
+        document.querySelector('.close').onclick = closeModal;
+        document.getElementById('cancelEdit').onclick = closeModal;
+
+        function openEditModal(index) {
+            const item = inventory[index];
+            document.getElementById('editIndex').value = index;
+
+            let fields = '';
+            if (item.type === 'enemy') {
+                fields = `
+                    <label><span>Name:</span> <input type="text" id="editName" value="${item.name}"></label>
+                    <label><span>Loot:</span> <input type="text" id="editLoot" value="${item.loot?.join(', ') || ''}"></label>
+                    <label><span>Strategy:</span> <input type="text" id="editStrategy" value="${item.targetStrategy || ''}"></label>
+                `;
+            } else {
+                fields = `
+                    <label><span>Name:</span> <input type="text" id="editName" value="${item.name}"></label>
+                    <label><span>Location:</span> <input type="text" id="editLocation" value="${item.location}"></label>
+                    <label><span>Notes:</span> <textarea id="editNotes">${item.notes || ''}</textarea></label>
+                `;
+            }
+
+            document.getElementById('editFields').innerHTML = fields;
+            modal.classList.add('active');
+        }
+
+        document.getElementById('editForm').onsubmit = e => {
+            e.preventDefault();
+            const idx = document.getElementById('editIndex').value;
+            const name = document.getElementById('editName').value.trim();
+            if (!name) return;
+
+            if (inventory[idx].type === 'enemy') {
+                inventory[idx] = {
+                    type: 'enemy',
+                    name,
+                    loot: document.getElementById('editLoot').value.split(',').map(s => s.trim()).filter(Boolean),
+                    targetStrategy: document.getElementById('editStrategy').value.trim()
+                };
+            } else {
+                inventory[idx] = {
+                    type: 'loot',
+                    name,
+                    location: document.getElementById('editLocation').value.trim(),
+                    notes: document.getElementById('editNotes').value.trim()
+                };
+            }
+
+            save();
+            render();
+            closeModal();
+        };
+    </script>
+</body>
+</html>
