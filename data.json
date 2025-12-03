@@ -183,5 +183,335 @@
             "ARC Synthetic Resin"
         ],
         "targetStrategy": "glowing central core,"
+    },
+    {
+        "type": "loot",
+        "name": "Advanced ARC Powercell",
+        "location": "Arc (high level enemies)",
+        "notes": "Scrap, unless you need Energy clips"
+    },
+    {
+        "type": "loot",
+        "name": "Advanced Electrical Components",
+        "location": "Electrical",
+        "notes": "Stash (used for many recipes, as well as Gear Bench level 3 and Utility Station level 3)"
+    },
+    {
+        "type": "loot",
+        "name": "Advanced Mechanical Components",
+        "location": "Mechanical",
+        "notes": "Stash (Gunsmith level 3)"
+    },
+    {
+        "type": "loot",
+        "name": "Agave",
+        "location": "Nature",
+        "notes": "Sell"
+    },
+    {
+        "type": "loot",
+        "name": "Air Freshener",
+        "location": "Mechanical",
+        "notes": "Sell"
+    },
+    {
+        "type": "loot",
+        "name": "Alarm Clock",
+        "location": "Residential",
+        "notes": "Sell"
+    },
+    {
+        "type": "loot",
+        "name": "Antiseptic",
+        "location": "Medical",
+        "notes": "Stash (Doctor's Orders quest)"
+    },
+    {
+        "type": "loot",
+        "name": "Apricot",
+        "location": "Nature",
+        "notes": "Stash (Scrappy upgrades level 3 and 5)"
+    },
+    {
+        "type": "loot",
+        "name": "ARC Alloy",
+        "location": "Arc (Various)",
+        "notes": "Stash (Clearer Skies mission and multiple workshop upgrades)"
+    },
+    {
+        "type": "loot",
+        "name": "ARC Circuitry",
+        "location": "Arc (Various)",
+        "notes": "Stash (Refiner level 3)"
+    },
+    {
+        "type": "loot",
+        "name": "ARC Coolant",
+        "location": "Arc (Various)",
+        "notes": "Scrap (Chemicals)"
+    },
+    {
+        "type": "loot",
+        "name": "ARC Flex Rubber",
+        "location": "Arc (Various)",
+        "notes": "Scrap (Rubber)"
+    },
+    {
+        "type": "loot",
+        "name": "ARC Motion Core",
+        "location": "Arc (Various)",
+        "notes": "Stash (Refiner level 2)"
+    },
+    {
+        "type": "loot",
+        "name": "ARC Performance Steel",
+        "location": "Arc (Various)",
+        "notes": "Sell"
+    },
+    {
+        "type": "loot",
+        "name": "ARC Powercell",
+        "location": "Arc (Various)",
+        "notes": "Stash (Refiner level 1 and Shield crafting)"
+    },
+    {
+        "type": "loot",
+        "name": "ARC Synthetic Resin",
+        "location": "Arc (Various)",
+        "notes": "Scrap (Plastic)"
+    },
+    {
+        "type": "loot",
+        "name": "ARC Thermo Lining",
+        "location": "Arc (Various)",
+        "notes": "Scrap (Fabric)"
+    },
+    {
+        "type": "loot",
+        "name": "Assorted Seeds",
+        "location": "Nature",
+        "notes": "Stash (Used for Celeste)"
+    },
+    {
+        "type": "loot",
+        "name": "Bastion Cell",
+        "location": "Arc (Bastion)",
+        "notes": "Stash (Gear Bench level 3)"
+    },
+    {
+        "type": "loot",
+        "name": "Battery",
+        "location": "Technological or Electrical",
+        "notes": "Stash (Trash into Treasure quest)"
+    },
+    {
+        "type": "loot",
+        "name": "Bicycle Pump",
+        "location": "Residential",
+        "notes": "Sell"
+    },
+    {
+        "type": "loot",
+        "name": "Bloated Tuna Can",
+        "location": "Commercial or Residential",
+        "notes": "Sell"
+    },
+    {
+        "type": "loot",
+        "name": "Blue Gate Communication Tower Key",
+        "location": "Any (random loot)",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Blue Gate Confiscation Room Key",
+        "location": "Any (random loot)",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Blue Gate Cellar Key",
+        "location": "Any (random loot)",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Blue Gate Village Key",
+        "location": "Any (random loot)",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Bombardier Cell",
+        "location": "Arc (Bombadier)",
+        "notes": "Stash (Refiner level 3)"
+    },
+    {
+        "type": "loot",
+        "name": "Breathtaking Snow Globe",
+        "location": "Residential, Old World or Commercial",
+        "notes": "Sell"
+    },
+    {
+        "type": "loot",
+        "name": "Broken Flashlight",
+        "location": "Security",
+        "notes": "Scrap (Batteries and Metal)"
+    },
+    {
+        "type": "loot",
+        "name": "Broken Guidance System",
+        "location": "Industrial",
+        "notes": "Scrap (Processors)"
+    },
+    {
+        "type": "loot",
+        "name": "Broken Handheld Radio",
+        "location": "Security",
+        "notes": "Scrap (Sensors and Wires)"
+    },
+    {
+        "type": "loot",
+        "name": "Broken Taser",
+        "location": "Security",
+        "notes": "Scrap (Battery and Wires)"
+    },
+    {
+        "type": "loot",
+        "name": "Buried City Hospital Key",
+        "location": "Any/random loot or Life of a Pharmacist quest reward",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Buried City JKV Employee Access Card",
+        "location": "Any (random loot)",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Buried City Residential Mastery Key",
+        "location": "Any/random loot, Digging up Dirt quest reward",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Buried City Town Hall Key",
+        "location": "Any (random loot)",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Burned ARC Circuitry",
+        "location": "Arc (Various)",
+        "notes": "Scrap (Arc Alloy)"
+    },
+    {
+        "type": "loot",
+        "name": "Camera Lens",
+        "location": "Security",
+        "notes": "Stash (Movie Night quest)"
+    },
+    {
+        "type": "loot",
+        "name": "Candle Holder",
+        "location": "Residential",
+        "notes": "Scrap (Metal)"
+    },
+    {
+        "type": "loot",
+        "name": "Canister",
+        "location": "Commercial",
+        "notes": "Scrap (Plastic)"
+    },
+    {
+        "type": "loot",
+        "name": "Cat Bed",
+        "location": "Commercial or residential",
+        "notes": "Stash (Scrappy level 4)"
+    },
+    {
+        "type": "loot",
+        "name": "Chemicals",
+        "location": "Mechanical, Residential or Medical",
+        "notes": "Stash (used for many recipes)"
+    },
+    {
+        "type": "loot",
+        "name": "Coffee Pot",
+        "location": "Residential",
+        "notes": "Sell"
+    },
+    {
+        "type": "loot",
+        "name": "Complex Gun Parts",
+        "location": "Security",
+        "notes": "Stash (to craft complex weapons)"
+    },
+    {
+        "type": "loot",
+        "name": "Coolant",
+        "location": "Mechanical",
+        "notes": "Scrap (Chemicals and Oil)"
+    },
+    {
+        "type": "loot",
+        "name": "Cooling Coil",
+        "location": "Industrial",
+        "notes": "Sell"
+    },
+    {
+        "type": "loot",
+        "name": "Cooling Fan",
+        "location": "Technological",
+        "notes": "Stash (Used for Expeditions)"
+    },
+    {
+        "type": "loot",
+        "name": "Cracked Bioscanner",
+        "location": "Medical",
+        "notes": "Stash (Medical Lab level 3)"
+    },
+    {
+        "type": "loot",
+        "name": "Crude Explosives",
+        "location": "Industrial or Security",
+        "notes": "Stash (Explosives Station level 3)"
+    },
+    {
+        "type": "loot",
+        "name": "Crumpled Plastic Bottle",
+        "location": "Residential",
+        "notes": "Scrap (Plastic)"
+    },
+    {
+        "type": "loot",
+        "name": "Dam Control Tower Key",
+        "location": "Any (random loot)",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Dam Staff Room Key",
+        "location": "Any/random loot, Tribute to Toledo quest reward",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Dam Surveillance Key",
+        "location": "Any (random loot)",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Dam Testing Annex Key",
+        "location": "Any (random loot)",
+        "notes": "Stash"
+    },
+    {
+        "type": "loot",
+        "name": "Dam Utility Key",
+        "location": "Any (random loot)",
+        "notes": "Stash"
     }
 ]
