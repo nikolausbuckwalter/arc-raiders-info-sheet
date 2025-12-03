@@ -1,1 +1,187 @@
-[]
+[
+    {
+        "type": "enemy",
+        "name": "Wasp",
+        "loot": [
+            "ARC Alloy",
+            "ARC Powercell",
+            "Wasp Driver"
+        ],
+        "targetStrategy": "Thrusters"
+    },
+    {
+        "type": "enemy",
+        "name": "Hornet",
+        "loot": [
+            "ARC Alloy",
+            "ARC Powercell",
+            "Simple Gun Parts",
+            "Hornet Driver"
+        ],
+        "targetStrategy": "Back exposed thrusters"
+    },
+    {
+        "type": "enemy",
+        "name": "Sentinel (Guards high value loot)",
+        "loot": [
+            "ARC Alloy",
+            "Advanced ARC Powercell",
+            "Sentinel Firing Core"
+        ],
+        "targetStrategy": "Yellow fuel tank"
+    },
+    {
+        "type": "enemy",
+        "name": "Rocketeer",
+        "loot": [
+            "ARC Alloy",
+            "Advanced ARC Powercell",
+            "Rocketeer Part"
+        ],
+        "targetStrategy": "Thrusters"
+    },
+    {
+        "type": "enemy",
+        "name": "Pop",
+        "loot": [
+            "ARC Alloy",
+            "ARC Powercell",
+            "Crude Explosives",
+            "Pop Trigger"
+        ],
+        "targetStrategy": "None"
+    },
+    {
+        "type": "enemy",
+        "name": "Tick",
+        "loot": [
+            "ARC Alloy",
+            "ARC Thermo Lining",
+            "Tick Pod"
+        ],
+        "targetStrategy": "None"
+    },
+    {
+        "type": "enemy",
+        "name": "Turret",
+        "loot": [
+            "ARC Alloy",
+            "ARC Powercell"
+        ],
+        "targetStrategy": "Only shoots if caught in scan beam. Wait for turret to stop shooting before return fire"
+    },
+    {
+        "type": "enemy",
+        "name": "Fireball",
+        "loot": [
+            "ARC Alloy",
+            "ARC Powercell",
+            "Fireball Burner"
+        ],
+        "targetStrategy": "None"
+    },
+    {
+        "type": "enemy",
+        "name": "Surveyors",
+        "loot": [
+            "ARC Alloy",
+            "ARC Powercell",
+            "Surveyor Vault"
+        ],
+        "targetStrategy": "look for bright blue beam, use high power weapon"
+    },
+    {
+        "type": "enemy",
+        "name": "Leaper",
+        "loot": [
+            "Leaper Pulse Unit",
+            "ARC Alloy",
+            "ARC Flex Rubber",
+            "ARC Performance Steel",
+            "Advanced ARC Powercell",
+            "Explosive Compound",
+            "Mechanical Components"
+        ],
+        "targetStrategy": "leg joints (immobilize), unload on its glowing central eye"
+    },
+    {
+        "type": "enemy",
+        "name": "Bastion",
+        "loot": [
+            "ARC Alloy",
+            "Advanced ARC Powercell",
+            "Bastion Cell"
+        ],
+        "targetStrategy": "rear leg joints (reduces mobility), rear canister, and then barrel part"
+    },
+    {
+        "type": "enemy",
+        "name": "Snitch",
+        "loot": [
+            "ARC Alloy",
+            "ARC Powercell",
+            "Snitch Scanner"
+        ],
+        "targetStrategy": "finish off, before it calls for help"
+    },
+    {
+        "type": "enemy",
+        "name": "Bombardier",
+        "loot": [
+            "Bombardier Cell",
+            "ARC Alloy",
+            "ARC Powercell",
+            "ARC Performance Steel",
+            "Advanced ARC Powercell",
+            "Mechanical Components"
+        ],
+        "targetStrategy": "yellow leg joints, revealing unarmored weak spots, once slowed target rear cylinder"
+    },
+    {
+        "type": "enemy",
+        "name": "Spotter (Bombardiers eyes)",
+        "loot": [
+            "Spotter relay",
+            "ARC Alloy",
+            "ARC Powercell",
+            "Sensors"
+        ],
+        "targetStrategy": "same spot"
+    },
+    {
+        "type": "enemy",
+        "name": "The Queen (Harvester Event)",
+        "loot": [
+            "Queen Reactor",
+            "Magnetic Accelerator",
+            "Complex Gun Parts",
+            "ARC Alloy",
+            "Advanced ARC Powercell",
+            "ARC Motion Core",
+            "ARC Circuitry",
+            "ARC Coolant",
+            "ARC Flex Rubber",
+            "ARC Thermo Lining",
+            "ARC Synthetic Resin",
+            "ARC Performance Steel",
+            "Advanced Mechanical Components",
+            "Advanced Electrical Components"
+        ],
+        "targetStrategy": "joints, central core"
+    },
+    {
+        "type": "enemy",
+        "name": "Matriarch (Matriarch Event, summons other ARC)",
+        "loot": [
+            "Matriarch Reactor",
+            "Magnetic Accelerator",
+            "ARC Alloy",
+            "ARC Circuitry",
+            "ARC Performance Steel",
+            "Advanced Powercell",
+            "ARC Flex Rubber",
+            "ARC Synthetic Resin"
+        ],
+        "targetStrategy": "glowing central core,"
+    }
+]

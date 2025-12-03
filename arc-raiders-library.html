@@ -18,12 +18,14 @@
         form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 600px; margin: 0 auto; }
         form.full { grid-template-columns: 1fr; }
         label span { display: inline-block; width: 110px; }
-        input, select, button { padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
-        button:not(.delete):not(#exportBtn):not(.theme-toggle) { background: #238636; color: white; font-weight: bold; }
-        button:hover:not(.delete) { background: #2ea043; }
+        input, textarea, select, button { padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+        textarea { resize: vertical; min-height: 80px; }
+        button:not(.delete):not(.edit):not(#exportBtn):not(.theme-toggle) { background: #238636; color: white; font-weight: bold; }
+        button:hover:not(.delete):not(.edit) { background: #2ea043; }
         button.delete { background: #da3633; padding: 6px 12px; font-size: 0.9em; }
         button.delete:hover { background: #ef4444; }
-        .checkbox-group { display: flex; gap: 20px; align-items: center; }
+        button.edit { background: #0366d6; padding: 6px 12px; font-size: 0.9em; margin-right: 6px; }
+        button.edit:hover { background: #005cc5; }
         #controls { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 20px 0; align-items: center; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid var(--border); padding: 12px; text-align: left; vertical-align: top; }
@@ -32,7 +34,15 @@
         tr:nth-child(even) { background: rgba(0,0,0,0.03); }
         [data-theme="dark"] tr:nth-child(even) { background: rgba(255,255,255,0.03); }
         .actions { white-space: nowrap; text-align: center; }
-        #loading { text-align: center; padding: 40px; font-size: 1.2em; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); padding: 24px; border-radius: 12px; width: 90%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-header h3 { margin: 0; }
+        .close { font-size: 28px; cursor: pointer; }
+        .modal form { grid-template-columns: 1fr; }
     </style>
 </head>
 <body>
@@ -41,14 +51,14 @@
             <h1>ARC Raiders Field Library</h1>
             <div>
                 <button class="theme-toggle" id="themeToggle">Dark Mode</button>
-                <button id="exportkapBtn">Export data.json</button>
+                <button id="exportBtn">Export data.json</button>
             </div>
         </div>
 
         <div id="loading">Loading data...</div>
 
         <div id="app" style="display:none;">
-            <!-- Add Enemy -->
+            <!-- Add Forms -->
             <div class="section">
                 <h2>Add Enemy</h2>
                 <form id="addEnemyForm" class="full">
@@ -59,22 +69,17 @@
                 </form>
             </div>
 
-            <!-- Add Loot -->
             <div class="section">
                 <h2>Add Loot</h2>
                 <form id="addLootForm">
                     <label><span>Name:</span> <input type="text" id="lootName" required></label>
                     <label><span>Location:</span> <input type="text" id="lootLocation" required></label>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox" id="sell"> Sell</label>
-                        <label><input type="checkbox" id="stash" checked> Stash</label>
-                        <label><input type="checkbox" id="scrap"> Scrap</label>
-                    </div>
+                    <label><span>Notes:</span> <textarea id="lootNotes" placeholder="e.g. Sell all, Stash for crafting, Scrap if duplicate..."></textarea></label>
                     <button type="submit" style="grid-column: span 2;">Add Loot</button>
                 </form>
             </div>
 
-            <!-- Inventory Table -->
+            <!-- Inventory -->
             <div class="section">
                 <h2>Inventory <small id="itemCount"></small></h2>
                 <div id="controls">
@@ -106,6 +111,24 @@
         </div>
     </div>
 
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Item</h3>
+                <span class="close">×</span>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editIndex">
+                <div id="editFields"></div>
+                <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" id="cancelEdit">Cancel</button>
+                    <button type="submit" style="background:#238636;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         let inventory = [];
 
@@ -121,33 +144,19 @@
             document.getElementById('themeToggle').textContent = isDark ? 'Dark Mode' : 'Light Mode';
         });
 
-        // Load data.json
+        // Load data
         fetch('data.json')
             .then(r => r.ok ? r.json() : Promise.reject())
-            .then(data => {
-                inventory = data;
-                mergeLocalStorageItems();
-                startApp();
-            })
-            .catch(() => {
-                inventory = JSON.parse(localStorage.getItem('arcRaidersInventory') || '[]');
-                startApp();
-            });
+            .then(data => { inventory = data; mergeLocalStorageItems(); startApp(); })
+            .catch(() => { inventory = JSON.parse(localStorage.getItem('arcRaidersInventory') || '[]'); startApp(); });
 
         function mergeLocalStorageItems() {
             const saved = JSON.parse(localStorage.getItem('arcRaidersInventory') || '[]');
             const existing = new Set(inventory.map(i => i.name.toLowerCase()));
-            saved.forEach(item => {
-                if (!existing.has(item.name.toLowerCase())) {
-                    inventory.push(item);
-                    existing.add(item.name.toLowerCase());
-                }
-            });
+            saved.forEach(item => { if (!existing.has(item.name.toLowerCase())) inventory.push(item); });
         }
 
-        function save() {
-            localStorage.setItem('arcRaidersInventory', JSON.stringify(inventory));
-        }
+        function save() { localStorage.setItem('arcRaidersInventory', JSON.stringify(inventory)); }
 
         function startApp() {
             document.getElementById('loading').remove();
@@ -175,36 +184,28 @@
 
             const tbody = document.querySelector('#inventoryTable tbody');
             tbody.innerHTML = '';
-            list.forEach((item, idx) => {
-                const realIndex = inventory.indexOf(item);
+            list.forEach(item => {
+                const idx = inventory.indexOf(item);
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${item.type}</td>
                     <td>${item.name}</td>
                     <td>${item.type === 'enemy'
                         ? `Loot: ${item.loot?.join(', ') || '—'}<br>Strategy: ${item.targetStrategy || '—'}`
-                        : `Location: ${item.location}<br>Sell: ${item.sell ? 'Yes' : 'No'} | Stash: ${item.stash ? 'Yes' : 'No'} | Scrap: ${item.scrap ? 'Yes' : 'No'}`}</td>
-                    <td class="actions"><button class="delete" data-index="${realIndex}">Delete</button></td>
+                        : `Location: ${item.location}<br>Notes: ${item.notes || '—'}`}</td>
+                    <td class="actions">
+                        <button class="edit" data-index="${idx}">Edit</button>
+                        <button class="delete" data-index="${idx}">Delete</button>
+                    </td>
                 `;
                 tbody.appendChild(row);
             });
 
             document.getElementById('itemCount').textContent = `(${list.length} / ${inventory.length} items)`;
-
-            // Delete handlers
-            document.querySelectorAll('button.delete').forEach(btn => {
-                btn.onclick = () => {
-                    if (confirm(`Permanently delete "${inventory[btn.dataset.index].name}"?`)) {
-                        inventory.splice(btn.dataset.index, 1);
-                        save();
-                        render();
-                    }
-                };
-            });
         }
 
         function setupEvents() {
-            // Forms
+            // Add forms
             document.getElementById('addEnemyForm').onsubmit = e => {
                 e.preventDefault();
                 inventory.push({
@@ -222,20 +223,17 @@
                     type: 'loot',
                     name: document.getElementById('lootName').value.trim(),
                     location: document.getElementById('lootLocation').value.trim(),
-                    sell: document.getElementById('sell').checked,
-                    stash: document.getElementById('stash').checked,
-                    scrap: document.getElementById('scrap').checked
+                    notes: document.getElementById('lootNotes').value.trim()
                 });
                 save(); render(); e.target.reset();
             };
 
             // Controls
-            ['search', 'typeFilter', 'sortBy', 'sortAsc'].forEach(id =>
-                document.getElementById(id).addEventListener('input', render) ||
-                document.getElementById(id).addEventListener('change', render)
-            );
+            ['search', 'typeFilter', 'sortBy', 'sortAsc'].forEach(id => {
+                document.getElementById(id).addEventListener('input', render);
+                document.getElementById(id).addEventListener('change', render);
+            });
 
-            // Header sort
             document.querySelectorAll('th[data-sort]').forEach(th => {
                 th.onclick = () => {
                     const key = th.dataset.sort;
@@ -248,19 +246,87 @@
                 };
             });
 
-            // EXPORT BUTTON — This is the one you wanted!
+            // Delete
+            document.querySelector('#inventoryTable tbody').addEventListener('click', e => {
+                if (e.target.classList.contains('delete')) {
+                    const idx = e.target.dataset.index;
+                    if (confirm(`Delete "${inventory[idx].name}" permanently?`)) {
+                        inventory.splice(idx, 1);
+                        save(); render();
+                    }
+                }
+                if (e.target.classList.contains('edit')) {
+                    openEditModal(+e.target.dataset.index);
+                }
+            });
+
+            // Export
             document.getElementById('exportBtn').addEventListener('click', () => {
                 const data = JSON.stringify(inventory, null, 4);
                 const blob = new Blob([data], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url;
-                a.download = 'data.json';
-                a.click();
+                a.href = url; a.download = 'data.json'; a.click();
                 URL.revokeObjectURL(url);
-                alert('data.json downloaded!\nReplace the old file in your folder to make all changes permanent.');
+                alert('data.json downloaded! Replace your old file to make changes permanent.');
             });
         }
+
+        // Edit Modal
+        const modal = document.getElementById('editModal');
+        const closeModal = () => modal.classList.remove('active');
+        document.querySelector('.close').onclick = closeModal;
+        document.getElementById('cancelEdit').onclick = closeModal;
+
+        function openEditModal(index) {
+            const item = inventory[index];
+            document.getElementById('editIndex').value = index;
+
+            let fields = '';
+            if (item.type === 'enemy') {
+                fields = `
+                    <label><span>Name:</span> <input type="text" id="editName" value="${item.name}"></label>
+                    <label><span>Loot:</span> <input type="text" id="editLoot" value="${item.loot?.join(', ') || ''}"></label>
+                    <label><span>Strategy:</span> <input type="text" id="editStrategy" value="${item.targetStrategy || ''}"></label>
+                `;
+            } else {
+                fields = `
+                    <label><span>Name:</span> <input type="text" id="editName" value="${item.name}"></label>
+                    <label><span>Location:</span> <input type="text" id="editLocation" value="${item.location}"></label>
+                    <label><span>Notes:</span> <textarea id="editNotes">${item.notes || ''}</textarea></label>
+                `;
+            }
+
+            document.getElementById('editFields').innerHTML = fields;
+            modal.classList.add('active');
+        }
+
+        document.getElementById('editForm').onsubmit = e => {
+            e.preventDefault();
+            const idx = document.getElementById('editIndex').value;
+            const name = document.getElementById('editName').value.trim();
+            if (!name) return;
+
+            if (inventory[idx].type === 'enemy') {
+                inventory[idx] = {
+                    type: 'enemy',
+                    name,
+                    loot: document.getElementById('editLoot').value.split(',').map(s => s.trim()).filter(Boolean),
+                    targetStrategy: document.getElementById('editStrategy').value.trim()
+                };
+            } else {
+                inventory[idx] = {
+                    type: 'loot',
+                    name,
+                    location: document.getElementById('editLocation').value.trim(),
+                    notes: document.getElementById('editNotes').value.trim()
+                };
+            }
+
+            save();
+            render();
+            closeModal();
+        };
     </script>
 </body>
 </html>
